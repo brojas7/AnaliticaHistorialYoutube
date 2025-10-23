@@ -1,14 +1,19 @@
-import os, re, json, time, random
+# utils_gemini.py
+
+import re, json, time, random
 import pandas as pd
 from tqdm import tqdm
 import google.generativeai as genai
 
+
+# --- Configuración de Gemini ---
 def setup_gemini(api_key: str, model_name: str = "gemini-2.5-flash"):
-    """Configura la API de Gemini."""
+    """Inicializa y devuelve el modelo de Gemini."""
     genai.configure(api_key=api_key)
     return genai.GenerativeModel(model_name)
 
 
+# --- Clasificación por lotes ---
 def classify_batch_with_gemini(model, batch_df: pd.DataFrame, retries: int = 2):
     """
     Analiza un batch pequeño (20 filas aprox) con Gemini.
@@ -21,7 +26,7 @@ def classify_batch_with_gemini(model, batch_df: pd.DataFrame, retries: int = 2):
 
     prompt = f"""
     Analiza los siguientes {len(batch_df)} videos de YouTube.
-    Devuelve únicamente una lista JSON válida donde cada elemento corresponde a un video,
+    Devuelve **únicamente** una lista JSON válida donde cada elemento corresponde a un video,
     con las claves: "category", "subtopic", "format", "keywords" (lista corta).
     No incluyas texto adicional ni explicaciones.
     Videos:
@@ -33,14 +38,14 @@ def classify_batch_with_gemini(model, batch_df: pd.DataFrame, retries: int = 2):
             response = model.generate_content(prompt, request_options={"timeout": 45})
             text = response.text.strip()
 
-            # A veces Gemini agrega texto extra → extraemos solo el JSON
+            # A veces Gemini agrega texto adicional → extraemos solo el JSON
             json_match = re.search(r'\[.*\]', text, re.DOTALL)
             if json_match:
                 text = json_match.group(0)
 
             results = json.loads(text)
 
-            # Validamos tamaño
+            # Validar tamaño esperado
             if len(results) != len(batch_df):
                 print(f"Tamaño inconsistente: esperados {len(batch_df)}, recibidos {len(results)}")
                 results = [results[0]] * len(batch_df)
@@ -52,7 +57,6 @@ def classify_batch_with_gemini(model, batch_df: pd.DataFrame, retries: int = 2):
             print(f"Error intento {attempt+1}: {e} → Reintentando en {wait:.1f}s...")
             time.sleep(wait)
 
-    # Fallo total → devolvemos valores por defecto
     print("Falló el batch, devolviendo valores por defecto.")
     return [
         {"category": "otros", "subtopic": "otros", "format": "desconocido", "keywords": []}
@@ -60,18 +64,24 @@ def classify_batch_with_gemini(model, batch_df: pd.DataFrame, retries: int = 2):
     ]
 
 
-def enrich_videos_with_gemini(df_part: pd.DataFrame, model, output_path: str, batch_size: int = 20):
+# --- Enriquecer DataFrame completo ---
+def enrich_videos_with_gemini(df: pd.DataFrame, model, batch_size: int = 20, save_path: str = None):
     """
-    Procesa un DataFrame completo en lotes usando Gemini.
-    Guarda el CSV enriquecido con las columnas nuevas.
+    Procesa un DataFrame en lotes usando Gemini y agrega columnas de categoría, subtema, formato y palabras clave.
+    Si se especifica save_path, guarda el CSV.
     """
     results = []
-    for start in tqdm(range(0, len(df_part), batch_size)):
+    for start in tqdm(range(0, len(df), batch_size)):
         end = start + batch_size
-        batch = df_part.iloc[start:end]
+        batch = df.iloc[start:end]
         batch_results = classify_batch_with_gemini(model, batch)
         results.extend(batch_results)
-        time.sleep(1)
+        time.sleep(1)  # evitar throttling
 
-    df_enrich = pd.concat([df_part.reset_index(drop=True), pd.json_normalize(results)], axis=1)
-    df_enrich.to_c
+    df_enriched = pd.concat([df.reset_index(drop=True), pd.json_normalize(results)], axis=1)
+
+    if save_path:
+        df_enriched.to_csv(save_path, index=False)
+        print(f"Archivo guardado en {save_path}")
+
+    return df_enriched
