@@ -3,7 +3,7 @@ import pandas as pd
 import hashlib
 import numpy as np
 
-def reverse_lookup(column, hashed_value):
+def reverse_lookup(column, hashed_value, hash_maps):
     """
     Busca en el diccionario 
     """
