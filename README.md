@@ -61,6 +61,8 @@ Abrir y ejecutar e siguiente notebook:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/brojas7/AnaliticaHistorialYoutube/blob/main/notebooks/main.ipynb)
 
+Nota: Ejecutar este notebook completo puede demorar aproximadamente 30 minutos.
+
 ### Opción 2: Correr en local
 1. **Clonar el repositorio:**
    ```bash
