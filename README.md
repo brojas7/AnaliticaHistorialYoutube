@@ -46,12 +46,10 @@ El análisis incluye la detección de sesgos, segmentación temática por *clust
 │   ├── project_utils.py                  # Utiidades de proyecto
 │   └── youtube_utils.py                  # Utilidades de Youtube
 │
-├── reports/
-│   ├── figures/                          # Gráficos importantes
-│   └── comparativa_final.png
+├── reports/                              # Gráficos importantes
 │
-├── README.md                          # Este archivo
-└── requirements.txt                   # Librerías necesarias
+├── README.md                             # Este archivo
+└── requirements.txt                      # Librerías necesarias
 ```
 
 ---
@@ -159,20 +157,9 @@ El modelo **híbrido** logra el mejor balance entre relevancia y diversidad, red
 5. **Evaluación de métricas de rendimiento y sesgo.**  
 6. **Visualización e interpretación.**
 
-
 ---
 
-## Visualizaciones destacadas
-
-- 📅 **Evolución trimestral de consumo** por cluster temático.  
-- 🔥 **Mapa de calor** de actividad por hora y día.  
-- 🧩 **Diversidad de clusters** y métricas de burbuja algorítmica.  
-- 🎯 **Comparativa de modelos**: Popularidad vs Contenido vs Híbrido.
-
-
----
-
-## 📜 Créditos
+## Créditos
 
 Este proyecto forma parte del **Reto Ético y Técnico de Recomendación Algorítmica**  
 en el curso *Fundamentos de analítica de datos*.  
