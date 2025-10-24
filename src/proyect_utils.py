@@ -1,5 +1,14 @@
 import ast
 import pandas as pd
+import hashlib
+import numpy as np
+
+def hash_value(x):
+    """Aplica hash SHA-256 truncado (12 chars) a cualquier valor."""
+    if pd.isna(x):
+        return np.nan
+    return hashlib.sha256(str(x).encode()).hexdigest()[:12]
+
 
 def str_to_list(column):
     """
