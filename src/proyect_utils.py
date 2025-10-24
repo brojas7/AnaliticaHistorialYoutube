@@ -23,6 +23,13 @@ def normalize_value(x):
     else:
         return x
 
+
+def hash_value(x): 
+    """Aplica hash SHA-256 truncado (12 chars) a cualquier valor.""" 
+    if pd.isna(x): 
+        return np.nan 
+    return hashlib.sha256(str(x).encode()).hexdigest()[:12]
+
 def str_to_list(column):
     """
     Convierte una columna de strings con formato de lista en listas reales.
