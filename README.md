@@ -82,9 +82,6 @@ Abrir y ejecutar e siguiente notebook:
 
 ## Diccionario de datos
 
-Antes de iniciar, es preciso conocer el diccionario de datos del dataframe que vamos a armar para trabajar y analizar
-
-
 | **Variable** | **Tipo de Dato (pandas)** | **Descripción / Significado** | **Origen del Dato** |
 |---------------|----------------------------|-------------------------------|---------------------|
 | `timestamp` | `datetime64[ns, UTC]` | Fecha y hora (con zona horaria UTC) en que el usuario visualizó el video. | Derivado de `watched_at` (YouTube Takeout). |
