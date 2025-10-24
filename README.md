@@ -82,6 +82,39 @@ Abrir y ejecutar e siguiente notebook:
 
 ---
 
+## Diccionario de datos
+
+Antes de iniciar, es preciso conocer el diccionario de datos del dataframe que vamos a armar para trabajar y analizar
+
+
+| **Variable** | **Tipo de Dato (pandas)** | **Descripción / Significado** | **Origen del Dato** |
+|---------------|----------------------------|-------------------------------|---------------------|
+| `timestamp` | `datetime64[ns, UTC]` | Fecha y hora (con zona horaria UTC) en que el usuario visualizó el video. | Derivado de `watched_at` (YouTube Takeout). |
+| `title` | `object` | Título principal del video (texto original). | Exportado de YouTube Takeout. |
+| `channel_title` | `object` | Nombre del canal que publicó el video. | YouTube Takeout. | Campo vacío en Takeout; reservado para enlace cruzado. |
+| `video_id` | `object` | Identificador único del video (anonimizado). | YouTube Takeout. |
+| `url` | `object` | Enlace al video de YouTube. | YouTube Takeout. |
+| `video_title` | `object` | Título limpio del video, tras preprocesamiento. | Derivado de `title`. |
+| `watched_at` | `object` | Fecha y hora original del historial de visualización. | YouTube Takeout. |
+| `weekday` | `category` | Día de la semana en que se vio el video (`Monday`–`Sunday`). | Derivado de `timestamp`. |
+| `hour` | `int64` | Hora del día (0–23) en que se vio el video. | Derivado de `timestamp`. |
+| `hour_group` | `object` | Franja horaria agrupada (por ejemplo, “mañana”, “tarde”, “noche”). | Calculada en el EDA temporal. |Fusionado desde API de YouTube o scraping. |
+| `is_subscribed` | `int64` | Indicador binario (1 = suscrito al canal, 0 = no suscrito). | Derivado de datos del usuario o proxy sintético. |
+| `interaction_score` | `float64` | Puntuación de interacción (combinación ponderada de likes, duración de vista, comentarios). | Calculada durante preprocesamiento. |
+| `category` | `object` | Categoría general del video (Educación, Entretenimiento, Música, etc.). | Asignada según metadatos o clasificación automática con Gemini. |
+| `subtopic` | `object` | Subtema específico dentro de la categoría. | Asignada según metadatos o clasificación automática con Gemini.  |
+| `format` | `object` | Tipo o formato del video (`Short`, `Long`, `Stream`, etc.). | Asignada según metadatos o clasificación automática con Gemini. |
+| `keywords` | `object` | Lista o texto de palabras clave del video. | Asignada según metadatos o clasificación automática con Gemini.  |
+| `category_vec` | `object` | Embedding vectorial de la categoría (representación numérica). | Generado por modelo de embeddings (Word2Vec). |
+| `subtopic_vec` | `object` | Embedding vectorial del subtema. | 	Generado por modelo de embeddings (Word2Vec). |
+| `format_vec` | `object` | Embedding vectorial del formato del video. | 	Generado por modelo de embeddings (Word2Vec).|
+| `video_title_vec` | `object` | Embedding vectorial del título del video. | 	Generado por modelo de embeddings (Word2Vec). |
+| `channel_title_vec` | `object` | Embedding vectorial del nombre del canal. | 	Generado por modelo de embeddings (Word2Vec). |
+| `keywords_vec` | `object` | Embedding vectorial de las palabras clave. | 	Generado por modelo de embeddings (Word2Vec).|
+| `content_vec` | `object` | Vector combinado que representa el contenido total del video (promedio ponderado de varios embeddings). | Generado como combinación de `video_title_vec`, `keywords_vec`, `category_vec`, etc. |
+| `cluster` | `int32` | Identificador de cluster temático asignado por K-Means sobre `content_vec`. | Calculado en la etapa de análisis semántico. |
+
+---
 
 ## Principales resultados
 
@@ -129,7 +162,7 @@ El modelo **híbrido** logra el mejor balance entre relevancia y diversidad, red
 
 ---
 
-## 📈 Visualizaciones destacadas
+## Visualizaciones destacadas
 
 - 📅 **Evolución trimestral de consumo** por cluster temático.  
 - 🔥 **Mapa de calor** de actividad por hora y día.  
