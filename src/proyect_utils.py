@@ -3,12 +3,25 @@ import pandas as pd
 import hashlib
 import numpy as np
 
-def hash_value(x):
-    """Aplica hash SHA-256 truncado (12 chars) a cualquier valor."""
-    if pd.isna(x):
-        return np.nan
-    return hashlib.sha256(str(x).encode()).hexdigest()[:12]
+def reverse_lookup(column, hashed_value):
+    """
+    Busca en el diccionario 
+    """
+    reverse_map = {v: k for k, v in hash_maps[column].items()}
+    return reverse_map.get(hashed_value, None)
 
+def normalize_value(x):
+    """Convierte listas a strings ordenados, mantiene consistencia en hashes."""
+    if isinstance(x, list):
+        try:
+            # ordenar los elementos para que ['a','b'] y ['b','a'] den el mismo hash
+            return ", ".join(sorted(map(str, x)))
+        except Exception:
+            return str(x)
+    elif isinstance(x, np.ndarray):
+        return ", ".join(map(str, x.tolist()))
+    else:
+        return x
 
 def str_to_list(column):
     """
